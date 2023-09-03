@@ -13,7 +13,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return Inertia::render('doctor/Page');
+        return Inertia::render('doctor/Page', ['doctors' => Doctor::orderBy('id', 'desc')->get()]);
     }
     /**
      * Show the form for creating a new resource.
@@ -38,8 +38,8 @@ class DoctorController extends Controller
             'doj' => 'required',
         ]);
 
-        $photo = time() . '.' . $request->file->extension();
-        $request->file->move(public_path('uploads'), $photo);
+        //$photo = time() . '.' . $request->file->extension();
+        //$request->file->move(public_path('uploads'), $photo);
 
         $doctor = Doctor::create([
             'name' => $request->name,
@@ -55,7 +55,7 @@ class DoctorController extends Controller
             'qualification' => $request->qualification,
             'work_experience' => $request->work_experience,
             'specialization' => $request->specialization,
-            'photo' => $photo,
+            'photo' => "",
         ]);
     }
 
@@ -90,4 +90,10 @@ class DoctorController extends Controller
     {
         //
     }
+
+    public function createOrUpdate()
+    {
+        //
+    }
+    
 }

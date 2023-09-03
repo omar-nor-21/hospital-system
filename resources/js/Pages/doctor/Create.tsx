@@ -7,9 +7,15 @@ import TextInput from "@/components/forms/TextInput";
 import { useForm } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { PageProps } from '@/types';
+import { FormEventHandler } from 'react';
 
+type craeteProps = {
+    show: boolean,
+    setShow:boolean
+}
+export default function Create({ show, setShow }: craeteProps) {
 
-export default function Create({ show, setShow }: {show: boolean, setShow:boolean}) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name:"",
         father_name:"",
@@ -28,14 +34,15 @@ export default function Create({ show, setShow }: {show: boolean, setShow:boolea
         specialization:"",
         
     });
+    
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
     const [doj] = useState(defaultDate);
 
     const closeModal = () => {
-        setShow(false);
+        setShow=(false);
     };
-    const submit = (e) => {
+    const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route("doctor.store"));
         reset();
@@ -119,7 +126,7 @@ export default function Create({ show, setShow }: {show: boolean, setShow:boolea
 
                         <TextInput
                             name="mother_name"
-                            value={data.phone}
+                            value={data.mother_name}
                             onChange={(e) =>
                                 setData("mother_name", e.target.value)
                             }
@@ -148,7 +155,7 @@ export default function Create({ show, setShow }: {show: boolean, setShow:boolea
                         >
                             <option>select sex</option>
                             <option value="male">Male</option>
-                            <option value="female">FeMale</option>
+                            <option value="female">Female</option>
                         </select>
                     </div>
                     <div className="mt-6 w-full ">

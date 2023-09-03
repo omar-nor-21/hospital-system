@@ -10,7 +10,7 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    protected $guraded = [];
+    protected $guarded = [];
 
     protected function photo(): Attribute
     {
