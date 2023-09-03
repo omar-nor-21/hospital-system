@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class DoctorController extends Controller
@@ -13,7 +14,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return Inertia::render('doctor/Page', ['doctors' => Doctor::orderBy('id', 'desc')->get()]);
+        return Inertia::render('doctor/Doctor.Page', ['doctors' => Doctor::orderBy('id', 'desc')->get()]);
     }
     /**
      * Show the form for creating a new resource.
@@ -57,6 +58,8 @@ class DoctorController extends Controller
             'specialization' => $request->specialization,
             'photo' => "",
         ]);
+
+        return Redirect::back();
     }
 
     /**

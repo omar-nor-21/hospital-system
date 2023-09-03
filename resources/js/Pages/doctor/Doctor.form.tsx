@@ -10,11 +10,11 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
 
-type craeteProps = {
+type DoctorFormProps = {
     show: boolean,
     setShow:boolean
 }
-export default function Create({ show, setShow }: craeteProps) {
+export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name:"",
@@ -40,7 +40,7 @@ export default function Create({ show, setShow }: craeteProps) {
     const [doj] = useState(defaultDate);
 
     const closeModal = () => {
-        setShow=(false);
+        setShow (false);
     };
     const submit: FormEventHandler = (e) => {
         e.preventDefault();

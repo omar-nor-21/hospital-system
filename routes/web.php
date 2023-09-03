@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\AmbulanceController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -38,9 +43,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // doctor
     Route::resource('/doctor', DoctorController::class, ['names' => 'doctor']);
+    Route::resource('/patient', PatientController::class, ['names' => 'patient']);
+    Route::resource('/appointment', AppointmentController::class, ['names' => 'appointment']);
+    Route::resource('/medicine', MedicineController::class, ['names' => 'medicine']);
+    Route::resource('/pharmacy', PharmacyController::class, ['names' => 'pharmacy']);
+    Route::resource('/ambulance', AmbulanceController::class, ['names' => 'ambulance']);
+
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
