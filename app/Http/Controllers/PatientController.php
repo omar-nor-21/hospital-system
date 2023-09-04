@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class PatientController extends Controller
 {
@@ -11,7 +14,7 @@ class PatientController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('patient/Patient.Page', ['patients' => Patient::orderBy('id', 'desc')->get()]);
     }
 
     /**
@@ -27,7 +30,24 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'patient_phone' => 'required',
+            'address' => 'required',
+        ]);
+
+        $patient = Patient::create([
+            'name' => $request->name,
+            'guardian' => $request->guardian,
+            'gender' => $request->sex,
+            'dob' => $request->dob,
+            'blood_group' => $request->blood_group,
+            'marital_status' => $request->marital_status,
+            'patient_phone' => $request->patient_phone,
+            'guardian_phone' => $request->guardian_phone,
+            'address' => $request->address,
+        ]);
+        return Redirect::back();
     }
 
     /**

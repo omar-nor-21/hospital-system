@@ -10,41 +10,34 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
 
-type DoctorFormProps = {
+type PatientFormProps = {
     show: boolean,
-    setShow:boolean
+    setShow: boolean
 }
-export default function DoctorForm({ show, setShow }: DoctorFormProps) {
-
+export default function PatientForm({ show, setShow }: PatientFormProps) {
+    ;
     const { data, setData, post, processing, errors, reset } = useForm({
-        name:"",
-        father_name:"",
-        mother_name : "",
-        phone:"",
-        sex:"",
-        blood_group:"",
-        marital_status:"",
-        dob:"",
-        doj:"",
-        photo:"",
-        emergency_contact:"",
-        email:"",
-        qualification:"",
-        work_experience:"",
-        specialization:"",
-        
+        name: "",
+        guardian: "",
+        gender: "",
+        blood_group: "",
+        marital_status: "",
+        dob: "",
+        patient_phone: "",
+        guardian_phone: "",
+        address: "",
+
     });
-    
+
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
-    const [doj] = useState(defaultDate);
 
     const closeModal = () => {
-        setShow (false);
+        setShow(false);
     };
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route("doctor.store"));
+        post(route("patient.store"));
         reset();
     };
     return (
@@ -53,7 +46,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                     <h2 className="text-xl font-medium  text-gray-900">
-                        New Doctor
+                        New Patient
                     </h2>
                     <button
                         onClick={closeModal}
@@ -98,47 +91,26 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                     <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
-                            htmlFor="father_name"
-                            value="Father Name"
+                            htmlFor="guardian"
+                            value="Guardian Name"
                         />
 
                         <TextInput
-                            name="father_name"
-                            value={data.father_name}
+                            name="guardian"
+                            value={data.guardian}
                             onChange={(e) =>
-                                setData("father_name", e.target.value)
+                                setData("guardian", e.target.value)
                             }
                             className="w-full"
                             placeholder="name"
                         />
 
                         <InputError
-                            message={errors.father_name}
+                            message={errors.guardian}
                             className="mt-2"
                         />
                     </div>
-                    <div className="mt-6 w-full ">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="father_name"
-                            value="Mother Name"
-                        />
 
-                        <TextInput
-                            name="mother_name"
-                            value={data.mother_name}
-                            onChange={(e) =>
-                                setData("mother_name", e.target.value)
-                            }
-                            className="w-full"
-                            placeholder="name"
-                        />
-
-                        <InputError
-                            message={errors.mother_name}
-                            className="mt-2"
-                        />
-                    </div>
                 </div>
                 <div className="flex space-x-4">
                     <div className="mt-6 w-full">
@@ -149,8 +121,8 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             Sex
                         </label>
                         <select
-                            name="status"
-                            onChange={(e) => setData("sex", e.target.value)}
+                            name="gender"
+                            onChange={(e) => setData("gender", e.target.value)}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select sex</option>
@@ -182,6 +154,24 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             className="mt-2"
                         />
                     </div>
+                    
+                </div>
+                <div className="flex space-x-4">
+                    <div className="mt-6 w-full">
+                        <InputLabel
+                            className="mb-2"
+                            htmlFor="dob"
+                            value="Date of birth"
+                        />
+                        <input
+                            className="w-full border-gray-300 rounded-md shadow-sm"
+                            type="date"
+                            defaultValue={dob.toLocaleDateString("en-CA")}
+                            onChange={(e) => setData("dob", e.target.value)}
+                        />
+
+                        <InputError message={errors.dob} className="mt-2" />
+                    </div>
                     <div className="mt-6 w-full ">
                         <label
                             htmlFor="blood group"
@@ -212,182 +202,67 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             className="mt-2"
                         />
                     </div>
+
                 </div>
                 <div className="flex space-x-4">
-                    <div className="mt-6 w-full">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="dob"
-                            value="Date of birth"
-                        />
-                        <input
-                            className="w-full border-gray-300 rounded-md shadow-sm"
-                            type="date"
-                            defaultValue={dob.toLocaleDateString("en-CA")}
-                            onChange={(e) => setData("dob", e.target.value)}
-                        />
-
-                        <InputError message={errors.dob} className="mt-2" />
-                    </div>
-                    <div className="mt-6 w-full ">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="doj"
-                            value="Date of joining"
-                        />
-                        <input
-                            className="w-full border-gray-300 rounded-md shadow-sm"
-                            type="date"
-                            defaultValue={doj.toLocaleDateString("en-CA")}
-                            onChange={(e) => setData("doj", e.target.value)}
-                        />
-
-                        <InputError message={errors.doj} className="mt-2" />
-                    </div>
-                    <div className="mt-6 w-full ">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="photo"
-                            value="Photo"
-                        />
-
-                        <TextInput
-                            name="photo"
-                            value={data.photo}
-                            type="file"
-                            onChange={(e) => setData("photo", e.target.value)}
-                            className="w-full"
-                        />
-
-                        <InputError message={errors.photo} className="mt-2" />
-                    </div>
-                </div>
-                <div className="flex space-x-4">
+                    
                     <div className="mt-6 w-full">
                         <InputLabel
                             className="mb-2"
                             htmlFor="phone"
-                            value="Phone"
+                            value="Patient Phone"
                         />
 
                         <TextInput
                             name="phone"
                             type="number"
-                            value={data.phone}
-                            onChange={(e) => setData("phone", e.target.value)}
+                            value={data.patient_phone}
+                            onChange={(e) => setData("patient_phone", e.target.value)}
                             className="w-full"
-                            placeholder="phone"
+                            placeholder="number"
                         />
 
-                        <InputError message={errors.phone} className="mt-2" />
+                        <InputError message={errors.patient_phone} className="mt-2" />
                     </div>
                     <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
-                            htmlFor="emergency_contact"
-                            value="Emergency Contact"
+                            htmlFor="guardian_phone"
+                            value="Guardian Phone"
                         />
 
                         <TextInput
-                            name="emergency_contact"
+                            name="guardian_phone"
                             type="number"
-                            value={data.emergency_contact}
+                            value={data.guardian_phone}
                             onChange={(e) =>
-                                setData("emergency_contact", e.target.value)
+                                setData("guardian_phone", e.target.value)
                             }
                             className="w-full"
                             placeholder="number"
                         />
 
                         <InputError
-                            message={errors.emergency_contact}
+                            message={errors.patient_phone}
                             className="mt-2"
                         />
                     </div>
                     <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
-                            htmlFor="email"
-                            value="email"
+                            htmlFor="address"
+                            value="address"
                         />
 
                         <TextInput
-                            name="email"
-                            value={data.email}
-                            onChange={(e) => setData("email", e.target.value)}
+                            name="address"
+                            value={data.address}
+                            onChange={(e) => setData("address", e.target.value)}
                             className="w-full"
-                            placeholder="name"
+                            placeholder="address"
                         />
 
-                        <InputError message={errors.email} className="mt-2" />
-                    </div>
-                </div>
-                <div className="flex space-x-4">
-                    <div className="mt-6 w-full">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="qualification"
-                            value="Qualification"
-                        />
-
-                        <TextInput
-                            name="qualification"
-                            value={data.qualification}
-                            onChange={(e) =>
-                                setData("qualification", e.target.value)
-                            }
-                            className="w-full"
-                            placeholder="qualification"
-                        />
-
-                        <InputError
-                            message={errors.qualification}
-                            className="mt-2"
-                        />
-                    </div>
-                    <div className="mt-6 w-full ">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="experience"
-                            value="Work Experience"
-                        />
-
-                        <TextInput
-                            name="work_experience"
-                            value={data.work_experience}
-                            onChange={(e) =>
-                                setData("work_experience", e.target.value)
-                            }
-                            className="w-full"
-                            placeholder="Experience"
-                        />
-
-                        <InputError
-                            message={errors.work_experience}
-                            className="mt-2"
-                        />
-                    </div>
-                    <div className="mt-6 w-full ">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="specialization"
-                            value="Specialization"
-                        />
-
-                        <TextInput
-                            name="specialization"
-                            value={data.specialization}
-                            onChange={(e) =>
-                                setData("specialization", e.target.value)
-                            }
-                            className="w-full"
-                            placeholder="name"
-                        />
-
-                        <InputError
-                            message={errors.specialization}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.address} className="mt-2" />
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end">
