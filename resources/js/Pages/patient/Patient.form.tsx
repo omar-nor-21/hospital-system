@@ -1,22 +1,31 @@
 import Modal from "@/components/forms/Modal";
-import React, { useState } from "react";
-import Layout from "@/layout/layout";
+import { useEffect, useState } from "react";
 import InputLabel from "@/components/forms/InputLabel";
 import InputError from "@/components/forms/InputError";
 import TextInput from "@/components/forms/TextInput";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
+import { usePatientContext } from "./PatientContext";
 
-type PatientFormProps = {
-    show: boolean,
-    setShow: boolean
+export type PatientProps = {
+    id?: string,
+    name: string,
+    guardian: string,
+    gender: string,
+    blood_group: string,
+    marital_status: string,
+    dob: string,
+    patient_phone: string,
+    guardian_phone: string,
+    address: string,
 }
-export default function PatientForm({ show, setShow }: PatientFormProps) {
-    ;
-    const { data, setData, post, processing, errors, reset } = useForm({
+
+export default function PatientForm() {
+    const ctx = usePatientContext()
+    const { data, setData, post, processing, errors, reset } = useForm<PatientProps>({
         name: "",
         guardian: "",
         gender: "",
@@ -26,28 +35,40 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
         patient_phone: "",
         guardian_phone: "",
         address: "",
-
     });
-
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
 
     const closeModal = () => {
-        setShow(false);
+        ctx?.setShow(false);
+        reset()
     };
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route("patient.store"));
-        reset();
+        ctx.setIsUpdateMode(true);
     };
+
+    const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
+
+    // is update mode
+    useEffect(() => {
+        if (ctx.isUpdateMode) {
+            const found = patients.find((patient) => patient.id === ctx.updateId);
+            if (found) setData(found)
+        }
+    }, [ctx.isUpdateMode, ctx.updateId])
+
     return (
-        <Modal show={show} onClose={closeModal}>
+        <Modal show={ctx.show} onClose={closeModal}>
             <form className="p-6" onSubmit={submit} >
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                     <h2 className="text-xl font-medium  text-gray-900">
                         New Patient
                     </h2>
+
                     <button
                         onClick={closeModal}
                         type="button"
@@ -123,6 +144,7 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
                         <select
                             name="gender"
                             onChange={(e) => setData("gender", e.target.value)}
+                            defaultValue={data.gender}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select sex</option>
@@ -139,9 +161,8 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
                         </label>
                         <select
                             name="marital status"
-                            onChange={(e) =>
-                                setData("marital_status", e.target.value)
-                            }
+                            onChange={(e) => setData("marital_status", e.target.value)}
+                            defaultValue={data.marital_status}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select marital status</option>
@@ -154,7 +175,7 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
                             className="mt-2"
                         />
                     </div>
-                    
+
                 </div>
                 <div className="flex space-x-4">
                     <div className="mt-6 w-full">
@@ -181,9 +202,8 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
                         </label>
                         <select
                             name="blood_group"
-                            onChange={(e) =>
-                                setData("blood_group", e.target.value)
-                            }
+                            onChange={(e) => setData("blood_group", e.target.value)}
+                            defaultValue={data.blood_group}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select blood group</option>
@@ -205,7 +225,7 @@ export default function PatientForm({ show, setShow }: PatientFormProps) {
 
                 </div>
                 <div className="flex space-x-4">
-                    
+
                     <div className="mt-6 w-full">
                         <InputLabel
                             className="mb-2"

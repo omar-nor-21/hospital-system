@@ -1,63 +1,73 @@
 import Modal from "@/components/forms/Modal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "@/layout/layout";
 import InputLabel from "@/components/forms/InputLabel";
 import InputError from "@/components/forms/InputError";
 import TextInput from "@/components/forms/TextInput";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
 
-type DoctorFormProps = {
-    show: boolean,
-    setShow:boolean
+type DoctorUpdateProps = {
+    showModelForUpdate: boolean,
+    setShowModelForUpdate: boolean,
+    updateId: number
 }
-export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name:"",
-        father_name:"",
-        mother_name : "",
-        phone:"",
-        sex:"",
-        blood_group:"",
-        marital_status:"",
-        dob:"",
-        doj:"",
-        photo:"",
-        emergency_contact:"",
-        email:"",
-        qualification:"",
-        work_experience:"",
-        specialization:"",
-        
+export default function DoctorUpdate({ showModelForUpdate, setShowModelForUpdate, updateId }: DoctorUpdateProps) {
+
+    const doctors = usePage().props.doctors;
+
+    useEffect(() => {
+        const find = doctors.find((doctor) => doctor.id === updateId);
+        setData(find)
+    }, [updateId])
+
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        id: "",
+        name: "",
+        father_name: "",
+        mother_name: "",
+        phone: "",
+        sex: "",
+        blood_group: "",
+        marital_status: "",
+        dob: "",
+        doj: "",
+        photo: "",
+        emergency_contact: "",
+        email: "",
+        qualification: "",
+        work_experience: "",
+        specialization: "",
+
     });
-    
+
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
     const [doj] = useState(defaultDate);
 
-    const closeModal = () => {
-        setShow (false);
+    const closeModal2 = () => {
+        setShowModelForUpdate(false);
     };
-    
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route("doctor.store"));
+        patch(route("doctor.update", data?.id));
         reset();
     };
     return (
-        <Modal show={show} onClose={closeModal}>
+        <Modal show={showModelForUpdate} onClose={closeModal2}>
             <form className="p-6" onSubmit={submit} >
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                     <h2 className="text-xl font-medium  text-gray-900">
-                        New Doctor
+                        Update Doctor
                     </h2>
                     <button
-                        onClick={closeModal}
+                        onClick={closeModal2}
                         type="button"
                         className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                     >
@@ -88,7 +98,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="name"
-                            value={data.name}
+                            value={data?.name}
                             onChange={(e) => setData("name", e.target.value)}
                             className="w-full"
                             placeholder="name"
@@ -105,7 +115,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="father_name"
-                            value={data.father_name}
+                            value={data?.father_name}
                             onChange={(e) =>
                                 setData("father_name", e.target.value)
                             }
@@ -127,7 +137,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="mother_name"
-                            value={data.mother_name}
+                            value={data?.mother_name}
                             onChange={(e) =>
                                 setData("mother_name", e.target.value)
                             }
@@ -153,6 +163,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             name="status"
                             onChange={(e) => setData("sex", e.target.value)}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            defaultValue={data?.sex}
                         >
                             <option>select sex</option>
                             <option value="male">Male</option>
@@ -171,6 +182,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             onChange={(e) =>
                                 setData("marital_status", e.target.value)
                             }
+                            defaultValue={data?.marital_status}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select marital status</option>
@@ -195,6 +207,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                             onChange={(e) =>
                                 setData("blood_group", e.target.value)
                             }
+                            defaultValue={data?.blood_group}
                             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         >
                             <option>select blood group</option>
@@ -245,7 +258,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <InputError message={errors.doj} className="mt-2" />
                     </div>
-                    <div className="mt-6 w-full ">
+                    {/* <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
                             htmlFor="photo"
@@ -254,14 +267,14 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="photo"
-                            value={data.photo}
+                            value={data?.photo}
                             type="file"
                             onChange={(e) => setData("photo", e.target.value)}
                             className="w-full"
                         />
 
                         <InputError message={errors.photo} className="mt-2" />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="flex space-x-4">
                     <div className="mt-6 w-full">
@@ -274,7 +287,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                         <TextInput
                             name="phone"
                             type="number"
-                            value={data.phone}
+                            value={data?.phone}
                             onChange={(e) => setData("phone", e.target.value)}
                             className="w-full"
                             placeholder="phone"
@@ -292,7 +305,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                         <TextInput
                             name="emergency_contact"
                             type="number"
-                            value={data.emergency_contact}
+                            value={data?.emergency_contact}
                             onChange={(e) =>
                                 setData("emergency_contact", e.target.value)
                             }
@@ -314,7 +327,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="email"
-                            value={data.email}
+                            value={data?.email}
                             onChange={(e) => setData("email", e.target.value)}
                             className="w-full"
                             placeholder="name"
@@ -333,7 +346,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="qualification"
-                            value={data.qualification}
+                            value={data?.qualification}
                             onChange={(e) =>
                                 setData("qualification", e.target.value)
                             }
@@ -355,7 +368,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="work_experience"
-                            value={data.work_experience}
+                            value={data?.work_experience}
                             onChange={(e) =>
                                 setData("work_experience", e.target.value)
                             }
@@ -377,7 +390,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
 
                         <TextInput
                             name="specialization"
-                            value={data.specialization}
+                            value={data?.specialization}
                             onChange={(e) =>
                                 setData("specialization", e.target.value)
                             }
@@ -392,7 +405,7 @@ export default function DoctorForm({ show, setShow }: DoctorFormProps) {
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end">
-                    <SecondaryButton onClick={closeModal}>
+                    <SecondaryButton onClick={closeModal2}>
                         Cancel
                     </SecondaryButton>
 
