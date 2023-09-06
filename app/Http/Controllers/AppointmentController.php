@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
+use App\Models\Doctor;
+use App\Models\Patient;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AppointmentController extends Controller
 {
@@ -11,7 +15,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('appointment/Appointment.Page', ['appointments' =>  Appointment::orderBy('id', 'desc')->with('doctors', 'patients')->get(), 'patients' => Patient::get(), 'doctors' => Doctor::all()]);
     }
 
     /**

@@ -12,10 +12,14 @@ class Doctor extends Model
 
     protected $guarded = [];
 
+    public function appointments()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
     protected function photo(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => url('uploads/'.$value),
+            get: fn ($value) => url('uploads/' . $value),
         );
     }
 }

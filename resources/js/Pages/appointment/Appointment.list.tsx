@@ -2,11 +2,13 @@ import Table from "@/components/table/Table";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { usePatientContext } from "./PatientContext";
-import { PatientProps } from "./Patient.form";
+import { AppointmentProps } from "./Appointment.form";
 
-export default function PatientList() {
-    const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
+export default function AppointmentList() {
+    const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
+
     const ctx = usePatientContext()
+
     const handleEdit = (id: string) => {
         ctx.setShow(true)
         ctx.setIsUpdateMode(true)
@@ -14,24 +16,24 @@ export default function PatientList() {
     }
 
     return (
-
         <Table
-            data={patients}
+            data={appointments}
             thead={() => (
                 <tr>
-                    <th scope="col" className="px-4 py-3">Name</th>
-                    <th scope="col" className="px-4 py-3">Guardian</th>
-                    <th scope="col" className="px-4 py-3">Phone</th>
-                    <th scope="col" className="px-4 py-3">Blood Group</th>
+                    <th scope="col" className="px-4 py-3">Patient</th>
+                    <th scope="col" className="px-4 py-3">Doctor</th>
+                    <th scope="col" className="px-4 py-3">Date</th>
+                    <th scope="col" className="px-4 py-3">Priority</th>
                     <th scope="col" className="px-12 py-3">Actions</th>
                 </tr>
             )}
             tbody={(value, index) => (
                 <tr className="border-b dark:border-gray-700" key={index}>
                     <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{value.name}</th>
-                    <td className="px-4 py-3">{value.guardian}</td>
-                    <td className="px-4 py-3">{value.guardian_phone}</td>
-                    <td className="px-4 py-3">{value.address}</td>
+                    <td className="px-4 py-3">{value.patients.name}</td>
+                    <td className="px-4 py-3">{value.doctors.name}</td>
+                    <td className="px-4 py-3">{value.date}</td>
+                    <td className="px-4 py-3">{value.priority}</td>
                     <td className="px-4 py-3 flex space-x-4 ">
                         <button
                             onClick={() => handleEdit(value.id as string)}

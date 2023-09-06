@@ -9,32 +9,34 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
 import { usePatientContext } from "./PatientContext";
+import { PatientProps } from "../patient/Patient.form";
 
-export type PatientProps = {
+export type AppointmentProps = {
     id?: string,
-    name: string,
-    guardian: string,
-    gender: string,
-    blood_group: string,
-    marital_status: string,
-    dob: string,
-    patient_phone: string,
-    guardian_phone: string,
-    address: string,
+    patient_id: string,
+    doctor_id: string,
+    fee: string,
+    date: string,
+    priority: string,
+    status: string,
 }
 
-export default function PatientForm() {
+export default function AppointmentForm() {
+
+    const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
+
+    const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
+
+    console.log(patients)
+
     const ctx = usePatientContext()
-    const { data, setData, post, processing, errors, reset } = useForm<PatientProps>({
-        name: "",
-        guardian: "",
-        gender: "",
-        blood_group: "",
-        marital_status: "",
-        dob: "",
-        patient_phone: "",
-        guardian_phone: "",
-        address: "",
+    const { data, setData, post, processing, errors, reset } = useForm<AppointmentProps>({
+        patient_id: "",
+        doctor_id: "",
+        fee: "",
+        date: "",
+        priority: "",
+        status: "",
     });
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
@@ -50,12 +52,12 @@ export default function PatientForm() {
         ctx.setIsUpdateMode(true);
     };
 
-    const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
+    const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
 
     // is update mode
     useEffect(() => {
         if (ctx.isUpdateMode) {
-            const found = patients.find((patient) => patient.id === ctx.updateId);
+            const found = appointments.find((appointment) => appointment.id === ctx.updateId);
             if (found) setData(found)
         }
     }, [ctx.isUpdateMode, ctx.updateId])
@@ -66,7 +68,7 @@ export default function PatientForm() {
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                     <h2 className="text-xl font-medium  text-gray-900">
-                        New Patient
+                        New Appointment
                     </h2>
 
                     <button
@@ -93,34 +95,33 @@ export default function PatientForm() {
                 {/* modal body */}
                 <div className="flex space-x-4">
                     <div className="mt-6 w-full">
-                        <InputLabel
-                            className="mb-2"
-                            htmlFor="name"
-                            value="Name"
-                        />
-
-                        <TextInput
-                            name="name"
-                            value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
-                            className="w-full"
-                            placeholder="name"
-                        />
-
-                        <InputError message={errors.name} className="mt-2" />
+                        <InputLabel className="mb-2" htmlFor="name" value="Customer Name" />
+                        <select
+                            name="customer_id"
+                            onChange={(e) => setData('patient_id', e.target.value)}
+                            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option value="">Choose a customer</option>
+                            {patients.map((patient) => (
+                                <option value={patient.id} key={patient.id}>
+                                    {patient.name}
+                                </option>
+                            ))}
+                        </select>
+                        <InputError message={errors.patient_id} className="mt-2" />
                     </div>
                     <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
-                            htmlFor="guardian"
-                            value="Guardian Name"
+                            htmlFor="doctor"
+                            value="doctor Name"
                         />
 
                         <TextInput
-                            name="guardian"
-                            value={data.guardian}
+                            name="doctor"
+                            value={data.doctor}
                             onChange={(e) =>
-                                setData("guardian", e.target.value)
+                                setData("doctor", e.target.value)
                             }
                             className="w-full"
                             placeholder="name"
