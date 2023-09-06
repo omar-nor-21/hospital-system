@@ -1,32 +1,22 @@
 import Table from "@/components/table/Table";
 import { PageProps } from "@/types";
 import { useForm, usePage } from "@inertiajs/react";
+import { useFormContext } from "../PageFormContext";
+import { DoctorProps } from "./Doctor.form";
 
-type DoctorProps = {
-    id: number,
-    name: "",
-    phone: "",
-    blood_group: "",
-    doj: "",
-    emergency_contact: "",
-
-};
-
-type DoctorFormProps = {
-    setShowModelForUpdate: boolean,
-    setUpdateId: number,
-}
-
-export default function DoctorList({ setShowModelForUpdate, setUpdateId }: DoctorFormProps) {
+export default function DoctorList() {
     const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
 
-    const { data, delete: destroy } = useForm({});
+    const ctx = useFormContext();
 
-    const getSelectId = (id: number) => {
-        setUpdateId(id);
-        setShowModelForUpdate(true)
+    const { delete: destroy } = useForm({});
+
+    const handleEdit = (id: string) => {
+        ctx.setUpdateId(id);
+        ctx.setShow(true)
+        ctx.setIsUpdateMode(true);
     }
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
         destroy(route("doctor.destroy", id));
     }
     return (
@@ -55,7 +45,7 @@ export default function DoctorList({ setShowModelForUpdate, setUpdateId }: Docto
                             data-modal-target="updateProductModal"
                             data-modal-toggle="updateProductModal"
                             className="flex hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200"
-                            onClick={() => getSelectId((value.id))}
+                            onClick={() => handleEdit(value.id as string)}
                         >
                             <svg
                                 className="w-6 h-6 mr-2"
@@ -79,7 +69,7 @@ export default function DoctorList({ setShowModelForUpdate, setUpdateId }: Docto
                             data-modal-target="deleteModal"
                             data-modal-toggle="deleteModal"
                             className="flex  hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400"
-                            onClick={() => handleDelete((value.id))}
+                            onClick={() => handleDelete((value.id as string))}
                         >
                             <svg
                                 className="w-4 h-4 mr-2"

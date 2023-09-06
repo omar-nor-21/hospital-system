@@ -36,6 +36,7 @@ export default function PatientForm() {
         guardian_phone: "",
         address: "",
     });
+    
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
 

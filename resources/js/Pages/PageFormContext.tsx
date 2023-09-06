@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState } from "react"
+import { PropsWithChildren, createContext, useContext, useState } from "react"
 
 type PageFormContextProps = {
     show: boolean,
@@ -11,17 +11,17 @@ type PageFormContextProps = {
     setUpdateId: (value: string) => void,
 }
 
-export const FormContext = createContext<PageFormContextProps | null>({
+const FormContext = createContext<PageFormContextProps>({
     show: false,
-
-    
     setShow: (value: boolean) => { },
     isUpdateMode: false,
     setIsUpdateMode: (value: boolean) => { },
     updateId: undefined,
     setUpdateId: (value: string) => { },
 })
-
+export const useFormContext = () => {
+    return useContext(FormContext);
+}
 const FormProvider = ({ children }: PropsWithChildren) => {
     const [show, setShow] = useState(false);
     const [isUpdateMode, setIsUpdateMode] = useState(false);

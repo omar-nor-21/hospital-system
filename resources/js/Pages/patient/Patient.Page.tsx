@@ -1,7 +1,7 @@
 import Layout from "@/layout/layout";
 import React, { useState } from "react";
 import PatientForm from "./Patient.form";
-import List from "./Patient.list";
+import PatientList from "./Patient.list";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import PatientProvider, { usePatientContext } from "./PatientContext";
 
@@ -21,7 +21,7 @@ function PatientPage() {
                     </button>
                 </div>
             </div>
-            <List />
+            <PatientList />
             <PatientForm />
         </>
     );

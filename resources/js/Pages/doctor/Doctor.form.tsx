@@ -1,55 +1,70 @@
 import Modal from "@/components/forms/Modal";
 import React, { useState } from "react";
-import Layout from "@/layout/layout";
 import InputLabel from "@/components/forms/InputLabel";
 import InputError from "@/components/forms/InputError";
 import TextInput from "@/components/forms/TextInput";
 import { useForm } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { PageProps } from '@/types';
 import { FormEventHandler } from 'react';
+import { useFormContext } from "../PageFormContext";
 
-type DoctorFormProps = {
-    show: boolean,
-    setShow:boolean
+export type DoctorProps = {
+    id?: string,
+    name: string,
+    father_name: string,
+    mother_name: string,
+    phone: string,
+    sex: string,
+    blood_group: string,
+    marital_status: string,
+    dob: string,
+    doj: string,
+    photo: string,
+    emergency_contact: string,
+    email: string,
+    qualification: string,
+    work_experience: string,
+    specialization: string,
 }
-export default function DoctorForm({ show, setShow }: DoctorFormProps) {
+export default function DoctorForm() {
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        name:"",
-        father_name:"",
-        mother_name : "",
-        phone:"",
-        sex:"",
-        blood_group:"",
-        marital_status:"",
-        dob:"",
-        doj:"",
-        photo:"",
-        emergency_contact:"",
-        email:"",
-        qualification:"",
-        work_experience:"",
-        specialization:"",
-        
+        name: "",
+        father_name: "",
+        mother_name: "",
+        phone: "",
+        sex: "",
+        blood_group: "",
+        marital_status: "",
+        dob: "",
+        doj: "",
+        photo: "",
+        emergency_contact: "",
+        email: "",
+        qualification: "",
+        work_experience: "",
+        specialization: "",
+
     });
-    
+
+    const ctx = useFormContext();
+
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
     const [doj] = useState(defaultDate);
 
     const closeModal = () => {
-        setShow (false);
+        ctx.setShow(false);
     };
-    
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route("doctor.store"));
         reset();
     };
     return (
-        <Modal show={show} onClose={closeModal}>
+        <Modal show={ctx.show} onClose={closeModal}>
             <form className="p-6" onSubmit={submit} >
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
