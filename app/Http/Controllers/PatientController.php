@@ -14,7 +14,7 @@ class PatientController extends Controller
      */
     public function index()
     {
-        return Inertia::render('patient/Patient.Page', ['patients' => Patient::orderBy('id', 'desc')->get()]);
+        return Inertia::render('patient/Patient.Page', ['patients' => Patient::orderBy('id', 'desc')->with('appointments')->get()]);
     }
 
     /**
