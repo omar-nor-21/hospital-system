@@ -9,8 +9,6 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { useFormContext } from "../PageFormContext";
 import Toast from "@/components/ui/Toast";
-import useDoctorStore from "@/store/toaster";
-import useToasterStore from "@/store/toaster";
 
 export type MedicineProps = {
     id?: string,
@@ -25,16 +23,10 @@ export type MedicineProps = {
     note: string,
     expire_date: string,
 }
-
-export default function MedicineForm() {
+export default function PharmacyForm() {
     const [showToast, setShowToast] = useState(false);
     const defaultDate = new Date();
     const [expire_date] = useState(defaultDate);
-
-    // const setMessage = useToasterStore(state => state.setMessage)
-    // const setShow = useToasterStore(state => state.setShow)
-
-
 
     const ctx = useFormContext()
     const { data, setData, post, processing, errors, reset } = useForm<MedicineProps>({
@@ -62,6 +54,7 @@ export default function MedicineForm() {
         reset()
         ctx.setIsUpdateMode(true);
 
+        ctx?.setShow(false);
 
         setShowToast(true);
 
@@ -69,10 +62,9 @@ export default function MedicineForm() {
 
     const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
 
-    const setMessage = useDoctorStore = 
     // toast timeout
     useEffect(() => {
-        setTimeout(() => { })
+        setTimeout(()=>{})
     }, [])
 
     // is update mode
@@ -85,6 +77,12 @@ export default function MedicineForm() {
 
     return (
         <div className="">
+            {
+                showToast && (
+
+                    <Toast message="Medicine Created Successfully." />
+                )
+            }
 
             <Modal show={ctx.show} onClose={closeModal}>
                 <form className="p-6" onSubmit={submit} >

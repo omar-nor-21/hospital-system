@@ -1,14 +1,14 @@
-import Table from "@/components/table/Table";
+import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { AppointmentProps } from "./Appointment.form";
 import { useFormContext } from "../PageFormContext";
+import useDoctorStore from "@/store/toaster";
 
 export default function AppointmentList() {
     const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
-    
-    console.log(appointments);
-    
+
+
     const ctx = useFormContext()
 
     const handleEdit = (id: string) => {
@@ -16,6 +16,9 @@ export default function AppointmentList() {
         ctx.setIsUpdateMode(true)
         ctx.setUpdateId(id)
     }
+
+    let name = useDoctorStore((state) => state.name)
+    console.log(name);
 
     return (
         <Table

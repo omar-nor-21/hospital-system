@@ -31,7 +31,7 @@ export default function AppointmentForm() {
     const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
     const ctx = useFormContext()
     const defaultDate = new Date();
-    const [dob] = useState(defaultDate);
+    const [appointment_date] = useState(defaultDate);
     const { data, setData, post, processing, errors, reset } = useForm<AppointmentProps>({
         patient_id: "",
         doctor_id: "",
@@ -155,7 +155,7 @@ export default function AppointmentForm() {
                         <input
                             className="w-full border-gray-300 rounded-md shadow-sm"
                             type="date"
-                            defaultValue={dob.toLocaleDateString("en-CA")}
+                            defaultValue={appointment_date.toLocaleDateString("en-CA")}
                             onChange={(e) => setData("appointment_date", e.target.value)}
                         />
 

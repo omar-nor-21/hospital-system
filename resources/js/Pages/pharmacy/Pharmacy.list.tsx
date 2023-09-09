@@ -1,84 +1,54 @@
 import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import { MedicineProps } from "./Pharmacy.form";
 import { useFormContext } from "../PageFormContext";
-import { DoctorProps } from "./Doctor.form";
-import Modal from "@/components/forms/Modal";
-import DangerButton from "@/components/ui/DangerButton";
-import SecondaryButton from "@/components/ui/SecondaryButton";
-import { useEffect, useState } from "react";
-import useToasterStore from "@/store/toaster";
+import Toast from "@/components/ui/Toast";
 
-export default function DoctorList() {
+export default function PharmacyMeList() {
 
-    const [deleteModel, setDeleteModel] = useState(false);
-    const [deleteId, setDeleteId] = useState("")
-    const [userConfirmation, setUserConfirmation] = useState(false)
+    const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
 
-    const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
-
-    const ctx = useFormContext();
-
-    const { delete: destroy, processing } = useForm({});
-    const { setMessage, setShow } = useToasterStore(state => state)
+    const ctx = useFormContext()
 
     const handleEdit = (id: string) => {
-        ctx.setUpdateId(id);
         ctx.setShow(true)
-        ctx.setIsUpdateMode(true);
+        ctx.setIsUpdateMode(true)
+        ctx.setUpdateId(id)
     }
-    const handleDelete = () => {
-        destroy(route("doctor.destroy", deleteId), {
-            onSuccess: (value) => {
-                setMessage(value.props.message as string);
-                setShow(true)
-                setDeleteModel(false)
-            },
-            onError: (value) => {
-                console.log(value)
-            }
-        });
-    }
-
-    const showModel = (id: string) => {
-        setDeleteId(id);
-        setDeleteModel(true)
-    }
-
-    const closeModal = () => {
-        setDeleteModel(false);
-    };
 
     return (
-        <>
-            <Table data={doctors}
+        <div className="">
+
+
+            <Table
+                data={medicines}
                 thead={() => (
                     <tr>
-                        <th scope="col" className="px-4 py-3">Id</th>
                         <th scope="col" className="px-4 py-3">Name</th>
-                        <th scope="col" className="px-4 py-3">Phone</th>
-                        <th scope="col" className="px-4 py-3">Blood group</th>
-                        <th scope="col" className="px-4 py-3">Date of joining</th>
-                        <th scope="col" className="px-4 py-3">Emergency contact</th>
+                        <th scope="col" className="px-4 py-3">Expire Date</th>
+                        <th scope="col" className="px-4 py-3">Category</th>
+                        <th scope="col" className="px-4 py-3">Tax</th>
+                        <th scope="col" className="px-4 py-3">Sale</th>
+                        <th scope="col" className="px-4 py-3">Quantity</th>
                         <th scope="col" className="px-12 py-3">Actions</th>
                     </tr>
-                )
-                }
+                )}
                 tbody={(value, index) => (
                     <tr className="border-b dark:border-gray-700" key={index}>
-                        <td className="px-4 py-3">{value.id}</td>
-                        <td className="px-4 py-3">{value.name}</td>
-                        <td className="px-4 py-3">{value.phone}</td>
-                        <td className="px-4 py-3">{value.blood_group}</td>
-                        <td className="px-4 py-3">{value.doj}</td>
-                        <td className="px-4 py-3">{value.emergency_contact}</td>
+                        <th className="px-4 py-3 ">{value.name}</th>
+                        <td className="px-4 py-3">{value.expire_date}</td>
+                        <td className="px-4 py-3">{value.category}</td>
+                        <td className="px-4 py-3">{value.tax}</td>
+                        <td className="px-4 py-3">{value.sale}</td>
+                        <td className="px-4 py-3">{value.quantity}</td>
                         <td className="px-4 py-3 flex space-x-4 ">
                             <button
+                                onClick={() => handleEdit(value.id as string)}
                                 type="button"
                                 data-modal-target="updateProductModal"
                                 data-modal-toggle="updateProductModal"
                                 className="flex hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200"
-                                onClick={() => handleEdit(value.id as string)}
                             >
                                 <svg
                                     className="w-6 h-6 mr-2"
@@ -96,13 +66,12 @@ export default function DoctorList() {
                                 </svg>
                                 Edit
                             </button>
-
                             <button
                                 type="button"
                                 data-modal-target="deleteModal"
                                 data-modal-toggle="deleteModal"
                                 className="flex  hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400"
-                                onClick={() => showModel(value.id as string)}                            >
+                            >
                                 <svg
                                     className="w-4 h-4 mr-2"
                                     viewBox="0 0 14 15"
@@ -120,27 +89,10 @@ export default function DoctorList() {
                                 Delete
                             </button>
                         </td>
-                    </ tr>
-
+                    </tr>
                 )}
             />
-
-            {/* // delete model */}
-            <Modal show={deleteModel} onClose={closeModal} maxWidth="sm">
-                <form  className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900 text-center">
-                        Are you sure you want to delete?
-                    </h2>
-                    <div className="mt-6 flex justify-center">
-                        <SecondaryButton onClick={closeModal}>No</SecondaryButton>
-
-                        <DangerButton className="ml-3 bg-blue-500 hover:bg-blue-500" disabled={processing} onClick={() => handleDelete()}>
-                            Yes
-                        </DangerButton>
-                    </div>
-                </form>
-            </Modal>
-        </>
+        </div>
 
     )
 

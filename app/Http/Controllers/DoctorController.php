@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -37,29 +38,33 @@ class DoctorController extends Controller
             'marital_status' => 'required',
             'dob' => 'required',
             'doj' => 'required',
+            'fee' => 'required',
         ]);
 
         //$photo = time() . '.' . $request->file->extension();
         //$request->file->move(public_path('uploads'), $photo);
 
-        $doctor = Doctor::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'sex' => $request->sex,
-            'blood_group' => $request->blood_group,
-            'marital_status' => $request->marital_status,
-            'dob' => $request->dob,
-            'doj' => $request->doj,
-            'phone' => $request->phone,
-            'emergency_contact' => $request->emergency_contact,
-            'email' => $request->email,
-            'qualification' => $request->qualification,
-            'work_experience' => $request->work_experience,
-            'specialization' => $request->specialization,
-            'photo' => "",
-        ]);
+        DB::transaction(function () use ($request) {
+            $doctor = Doctor::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'sex' => $request->sex,
+                'blood_group' => $request->blood_group,
+                'marital_status' => $request->marital_status,
+                'dob' => $request->dob,
+                'doj' => $request->doj,
+                'phone' => $request->phone,
+                'emergency_contact' => $request->emergency_contact,
+                'email' => $request->email,
+                'qualification' => $request->qualification,
+                'work_experience' => $request->work_experience,
+                'specialization' => $request->specialization,
+                'fee' => $request->fee,
+                'photo' => "",
+            ]);
 
-        return Redirect::back();
+            return Redirect::back()->with(['message' => "Doctor Created Successfully"]);
+        });
     }
 
     /**
@@ -81,9 +86,26 @@ class DoctorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Doctor $doctor)
     {
-        //
+        $doctor->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'sex' => $request->sex,
+            'blood_group' => $request->blood_group,
+            'marital_status' => $request->marital_status,
+            'dob' => $request->dob,
+            'doj' => $request->doj,
+            'phone' => $request->phone,
+            'emergency_contact' => $request->emergency_contact,
+            'email' => $request->email,
+            'qualification' => $request->qualification,
+            'work_experience' => $request->work_experience,
+            'specialization' => $request->specialization,
+            'fee' => $request->fee,
+            'photo' => "",
+        ]);
+        return Redirect::back()->with(['message' => "Doctor Updated Successfully"]);
     }
 
     /**
@@ -92,11 +114,11 @@ class DoctorController extends Controller
     public function destroy(Doctor $doctor)
     {
         $doctor->delete();
+        return Redirect::back()->with(['message' => "Doctor Deleted Successfully"]);
     }
 
-    public function createOrUpdate()
+    public function createOrUpdate(Request $request)
     {
         //
     }
-    
 }

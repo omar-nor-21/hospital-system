@@ -1,4 +1,4 @@
-import Table from "@/components/table/Table";
+import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { PatientProps } from "./Patient.form";

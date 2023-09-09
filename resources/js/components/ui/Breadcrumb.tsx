@@ -1,6 +1,4 @@
-import React from 'react'
-
-export default function Breadcrumb({name} : {name: string}) {
+export default function Breadcrumb({ name, link }: { name: string, link?: string }) {
     return (
 
         <nav className="flex" aria-label="Breadcrumb">
@@ -21,7 +19,7 @@ export default function Breadcrumb({name} : {name: string}) {
                         <a href="#" className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">{name}</a>
                     </div>
                 </li>
-               
+
             </ol>
         </nav>
 

@@ -39,9 +39,8 @@ class AppointmentController extends Controller
             'doctor_id' => "required",
             'status' => "required"
         ]);
-
         $appointment = Appointment::create([
-            'appointment_date' => $request->date,
+            'appointment_date' => $request->appointment_date,
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
             'doctor_fee' => $request->fee,
