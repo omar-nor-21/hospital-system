@@ -6,7 +6,9 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Laravel\Prompts\Themes\Default\Renderer;
 
 class AppointmentController extends Controller
 {
@@ -31,7 +33,22 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $request->validate([
+            'patient_id' => "required",
+            'doctor_id' => "required",
+            'status' => "required"
+        ]);
+
+        $appointment = Appointment::create([
+            'appointment_date' => $request->date,
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $request->doctor_id,
+            'doctor_fee' => $request->fee,
+            'priority' => 'normal',
+            'status' => $request->status
+        ]);
+        return Redirect::back();
     }
 
     /**
@@ -61,8 +78,8 @@ class AppointmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Appointment $appointment)
     {
-        //
+        $appointment->destroy;
     }
 }

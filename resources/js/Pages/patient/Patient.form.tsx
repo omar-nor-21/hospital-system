@@ -7,8 +7,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
-import { FormEventHandler } from 'react';
-import { usePatientContext } from "./PatientContext";
+import { useFormContext } from "../PageFormContext";
 
 export type PatientProps = {
     id?: string,
@@ -24,7 +23,7 @@ export type PatientProps = {
 }
 
 export default function PatientForm() {
-    const ctx = usePatientContext()
+    const ctx = useFormContext()
     const { data, setData, post, processing, errors, reset } = useForm<PatientProps>({
         name: "",
         guardian: "",
@@ -36,7 +35,7 @@ export default function PatientForm() {
         guardian_phone: "",
         address: "",
     });
-    
+
     const defaultDate = new Date();
     const [dob] = useState(defaultDate);
 

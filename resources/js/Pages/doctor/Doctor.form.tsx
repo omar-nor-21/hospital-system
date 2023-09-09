@@ -26,6 +26,8 @@ export type DoctorProps = {
     qualification: string,
     work_experience: string,
     specialization: string,
+    fee: number | undefined,
+
 }
 export default function DoctorForm() {
 

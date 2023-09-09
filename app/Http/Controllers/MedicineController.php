@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medicine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class MedicineController extends Controller
 {
@@ -11,7 +14,7 @@ class MedicineController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('medicine/Medicine.Page',['medicines' => Medicine::orderBy('id','desc')->get()]);
     }
 
     /**
@@ -27,7 +30,24 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => "required",
+            'sale' => "required",
+            "quantity" => "required"
+        ]);
+
+        $medicine = Medicine::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'company' => $request->company,
+            'composition' => $request->composition,
+            'group' => $request->group,
+            'sale' => $request->sale,
+            'tax' => $request->tax,
+            'quantity' => $request->quantity,
+            'expire_date' => $request->expire_date,
+        ]);
+        return Redirect::back()->with('success' ,'Created New Medicine');
     }
 
     /**

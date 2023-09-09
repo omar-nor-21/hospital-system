@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import PatientForm from "./Patient.form";
 import PatientList from "./Patient.list";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import PatientProvider, { usePatientContext } from "./PatientContext";
+import FormProvider, { useFormContext } from "../PageFormContext";
 
 function PatientPage() {
-    const ctx = usePatientContext()
+    const ctx = useFormContext()
 
     return (
         <>
@@ -29,10 +29,10 @@ function PatientPage() {
 
 export default () => {
     return (
-        <PatientProvider>
+        <FormProvider>
             <Layout>
                 <PatientPage />
             </Layout>
-        </PatientProvider>
+        </FormProvider>
     )
 }

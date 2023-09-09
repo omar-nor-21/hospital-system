@@ -1,12 +1,15 @@
 import Table from "@/components/table/Table";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
-import { usePatientContext } from "./PatientContext";
 import { PatientProps } from "./Patient.form";
+import { useFormContext } from "../PageFormContext";
 
 export default function PatientList() {
+    
     const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
-    const ctx = usePatientContext()
+
+    const ctx = useFormContext()
+
     const handleEdit = (id: string) => {
         ctx.setShow(true)
         ctx.setIsUpdateMode(true)

@@ -14,7 +14,7 @@ class Doctor extends Model
 
     public function appointments()
     {
-        return $this->belongsTo(Doctor::class, 'doctor_id');
+        return $this->hasMany(Appointment::class, 'doctor_id');
     }
     protected function photo(): Attribute
     {

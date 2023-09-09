@@ -1,14 +1,14 @@
 import Table from "@/components/table/Table";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
-import { AppointmentProps } from "./Appointment.form";
+import { MedicineProps } from "./Medicine.form";
 import { useFormContext } from "../PageFormContext";
+import Toast from "@/components/ui/Toast";
 
-export default function AppointmentList() {
-    const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
+export default function MedicineList() {
     
-    console.log(appointments);
-    
+    const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
+
     const ctx = useFormContext()
 
     const handleEdit = (id: string) => {
@@ -16,25 +16,32 @@ export default function AppointmentList() {
         ctx.setIsUpdateMode(true)
         ctx.setUpdateId(id)
     }
-
+    
     return (
+        <div className="">
+
+
         <Table
-            data={appointments}
+            data={medicines}
             thead={() => (
                 <tr>
-                    <th scope="col" className="px-4 py-3">Patient</th>
-                    <th scope="col" className="px-4 py-3">Doctor</th>
-                    <th scope="col" className="px-4 py-3">Appintment Date</th>
-                    <th scope="col" className="px-4 py-3">Priority</th>
+                    <th scope="col" className="px-4 py-3">Name</th>
+                    <th scope="col" className="px-4 py-3">Expire Date</th>
+                    <th scope="col" className="px-4 py-3">Category</th>
+                    <th scope="col" className="px-4 py-3">Tax</th>
+                    <th scope="col" className="px-4 py-3">Sale</th>
+                    <th scope="col" className="px-4 py-3">Quantity</th>
                     <th scope="col" className="px-12 py-3">Actions</th>
                 </tr>
             )}
             tbody={(value, index) => (
                 <tr className="border-b dark:border-gray-700" key={index}>
-                    <td className="px-4 py-3">{value.patients?.name}</td>
-                    <td className="px-4 py-3">{value.doctors?.name}</td>
-                    <td className="px-4 py-3">{value.appointment_date}</td>
-                    <td className="px-4 py-3">{value.priority}</td>
+                    <th className="px-4 py-3 ">{value.name}</th>
+                    <td className="px-4 py-3">{value.expire_date}</td>
+                    <td className="px-4 py-3">{value.category}</td>
+                    <td className="px-4 py-3">{value.tax}</td>
+                    <td className="px-4 py-3">{value.sale}</td>
+                    <td className="px-4 py-3">{value.quantity}</td>
                     <td className="px-4 py-3 flex space-x-4 ">
                         <button
                             onClick={() => handleEdit(value.id as string)}
@@ -85,6 +92,8 @@ export default function AppointmentList() {
                 </tr>
             )}
         />
+        </div>
+
     )
 
 }

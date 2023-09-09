@@ -5,6 +5,7 @@ type TableProps<T> = {
     data: T[]
 }
 const Table = <T,>({ thead, tbody, data }: TableProps<T>) => {
+
     return (
         <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
             <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
