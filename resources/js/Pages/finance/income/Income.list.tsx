@@ -1,31 +1,30 @@
 import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
 import { useForm, usePage } from "@inertiajs/react";
-import { useFormContext } from "../../context/PageFormContext";
-import { DoctorProps } from "./Doctor.form";
+import { IncomeProps } from "./Income.form";
+import { useFormContext } from "@/context/PageFormContext";
 import Modal from "@/components/forms/Modal";
-import DangerButton from "@/components/ui/DangerButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
-import { useEffect, useState } from "react";
+import DangerButton from "@/components/ui/DangerButton";
 import useToasterStore from "@/store/toaster";
 
-export default function DoctorList() {
+export default function IncomeList() {
+    const incomes = usePage<PageProps<{ incomes: IncomeProps[] }>>().props.incomes;
 
-    const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
+    const ctx = useFormContext()
 
-    const ctx = useFormContext();
+    const { setShow, setMessage } = useToasterStore(state => state)
 
     const { delete: destroy, processing } = useForm({});
-    
-    const { setMessage, setShow } = useToasterStore(state => state)
 
     const handleEdit = (id: string) => {
-        ctx.setUpdateId(id);
         ctx.setShow(true)
-        ctx.setIsUpdateMode(true);
+        ctx.setIsUpdateMode(true)
+        ctx.setUpdateId(id)
     }
+
     const handleDelete = () => {
-        destroy(route("doctor.destroy", ctx.deleteId), {
+        destroy(route("income.destroy", ctx.deleteId), {
             onSuccess: (value) => {
                 setMessage(value.props.message as string);
                 setShow(true)
@@ -48,34 +47,34 @@ export default function DoctorList() {
 
     return (
         <>
-            <Table data={doctors}
+            <Table
+                data={incomes}
                 thead={() => (
                     <tr>
-                        <th scope="col" className="px-4 py-3">Id</th>
                         <th scope="col" className="px-4 py-3">Name</th>
-                        <th scope="col" className="px-4 py-3">Phone</th>
-                        <th scope="col" className="px-4 py-3">Blood group</th>
-                        <th scope="col" className="px-4 py-3">Date of joining</th>
-                        <th scope="col" className="px-4 py-3">Emergency contact</th>
+                        <th scope="col" className="px-4 py-3">Invoice Number</th>
+                        <th scope="col" className="px-4 py-3">Date</th>
+                        <th scope="col" className="px-4 py-3">Description</th>
+                        <th scope="col" className="px-4 py-3">Income Head</th>
+                        <th scope="col" className="px-4 py-3">Amount</th>
                         <th scope="col" className="px-12 py-3">Actions</th>
                     </tr>
-                )
-                }
+                )}
                 tbody={(value, index) => (
                     <tr className="border-b dark:border-gray-700" key={index}>
-                        <td className="px-4 py-3">{value.id}</td>
                         <td className="px-4 py-3">{value.name}</td>
-                        <td className="px-4 py-3">{value.phone}</td>
-                        <td className="px-4 py-3">{value.blood_group}</td>
-                        <td className="px-4 py-3">{value.doj}</td>
-                        <td className="px-4 py-3">{value.emergency_contact ?? "-----"}</td>
+                        <td className="px-4 py-3">{value.invoice_number}</td>
+                        <td className="px-4 py-3">{value.date}</td>
+                        <td className="px-4 py-3">{value.description ?? "----------"}</td>
+                        <td className="px-4 py-3">{value.income_head}</td>
+                        <td className="px-4 py-3">${value.amount}</td>
                         <td className="px-4 py-3 flex space-x-4 ">
                             <button
+                                onClick={() => handleEdit(value.id as string)}
                                 type="button"
                                 data-modal-target="updateProductModal"
                                 data-modal-toggle="updateProductModal"
                                 className="flex hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200"
-                                onClick={() => handleEdit(value.id as string)}
                             >
                                 <svg
                                     className="w-6 h-6 mr-2"
@@ -93,13 +92,13 @@ export default function DoctorList() {
                                 </svg>
                                 Edit
                             </button>
-
                             <button
+                                onClick={() => showModel(value.id as string)}
                                 type="button"
                                 data-modal-target="deleteModal"
                                 data-modal-toggle="deleteModal"
                                 className="flex  hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400"
-                                onClick={() => showModel(value.id as string)}                            >
+                            >
                                 <svg
                                     className="w-4 h-4 mr-2"
                                     viewBox="0 0 14 15"
@@ -117,8 +116,7 @@ export default function DoctorList() {
                                 Delete
                             </button>
                         </td>
-                    </ tr>
-
+                    </tr>
                 )}
             />
 

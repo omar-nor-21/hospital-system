@@ -7,94 +7,113 @@ import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
-import { useFormContext } from "../PageFormContext";
+import { useFormContext } from "../../context/PageFormContext";
 import Toast from "@/components/ui/Toast";
+import { PatientProps } from "../patient/Patient.form";
+import { MedicineProps } from "../medicine/Medicine.form";
+import useToasterStore from "@/store/toaster";
 
-export type MedicineProps = {
+export type PharmacyProps = {
     id?: string,
-    name: string,
-    category: string,
-    company: string,
-    composition: string,
-    group: string,
-    tax: string,
-    sale: string,
+    patient_id: string,
+    medicine_id: string,
+    price: string,
     quantity: string,
-    note: string,
-    expire_date: string,
+    medicine_name?: string,
+    expire_date?: string,
+    patients?: PatientProps,
+    medicines?: MedicineProps
 }
 export default function PharmacyForm() {
-    const [showToast, setShowToast] = useState(false);
-    const defaultDate = new Date();
-    const [expire_date] = useState(defaultDate);
-
     const ctx = useFormContext()
-    const { data, setData, post, processing, errors, reset } = useForm<MedicineProps>({
-        name: "",
-        category: "",
-        company: "",
-        composition: "",
-        group: "",
-        tax: "",
-        sale: "",
-        quantity: "",
-        note: "",
-        expire_date: "",
-    });
-
-    const closeModal = () => {
-        ctx?.setShow(false);
-        reset()
-    };
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-
-        post(route("medicine.store"));
-        reset()
-        ctx.setIsUpdateMode(true);
-
-        ctx?.setShow(false);
-
-        setShowToast(true);
-
-    };
 
     const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
 
-    // toast timeout
-    useEffect(() => {
-        setTimeout(()=>{})
-    }, [])
+    const pharmacies = usePage<PageProps<{ pharmacies: PharmacyProps[] }>>().props.pharmacies;
+
+    const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
+
+    const { setShow, setMessage } = useToasterStore(state => state);
+
+    const { data, setData, post, processing, errors, reset, patch } = useForm<PharmacyProps>({
+        patient_id: "",
+        medicine_id: "",
+        price: "",
+        quantity: "",
+    });
+
+
+    const closeModal = () => {
+        ctx.setShow(false);
+        ctx.setIsUpdateMode(false);
+        reset();
+    };
+
+    const submit: FormEventHandler = (e) => {
+        if (ctx.isUpdateMode !== true) {
+            post(route("pharmacy.store"), {
+                onSuccess: (value) => {
+                    console.log(value)
+                    setMessage(value.props.message as string);
+                    ctx.setShow(false)
+                    setShow(true)
+                },
+                onError: (error) => {
+                    console.log(error)
+                },
+
+            });
+
+        }
+        else {
+            patch(route("pharmacy.update", data.id), {
+                onSuccess: (value) => {
+                    console.log(value)
+                    setMessage(value.props.message as string);
+                    ctx.setShow(false)
+                    setShow(true)
+                    reset();
+                },
+                onError: (error) => {
+                    console.log(error)
+                },
+
+            });
+        }
+
+    };
+
 
     // is update mode
     useEffect(() => {
         if (ctx.isUpdateMode) {
-            const found = medicines.find((patient) => patient.id === ctx.updateId);
+            const found = pharmacies.find((pharmacy) => pharmacy.id === ctx.updateId);
             if (found) setData(found)
         }
     }, [ctx.isUpdateMode, ctx.updateId])
 
+
+    useEffect(() => {
+        const medicine = medicines.find((d) => d.id == data.medicine_id);
+        data.medicine_id !== "" ?
+            setData(prv => ({ ...prv, medicine_name: medicine?.name, price: medicine?.sale as string })) :
+            setData(prv => ({ ...prv, medicine_name: "", price: "" }))
+    }, [data.medicine_id])
+
+
     return (
         <div className="">
-            {
-                showToast && (
-
-                    <Toast message="Medicine Created Successfully." />
-                )
-            }
-
-            <Modal show={ctx.show} onClose={closeModal}>
+            <Modal show={ctx.show} onClose={closeModal} maxWidth="2xl">
                 <form className="p-6" onSubmit={submit} >
                     {/* header modal */}
                     <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                         {
-                            ctx.isUpdateMode == true ?
+                            ctx.isUpdateMode === true ?
                                 <h2 className="text-xl font-medium  text-gray-900">
                                     Update Medicine
                                 </h2>
                                 : <h2 className="text-xl font-medium  text-gray-900">
-                                    New Medicine
+                                    New Pharmacy
                                 </h2>
                         }
                         <button
@@ -121,126 +140,74 @@ export default function PharmacyForm() {
                     {/* modal body */}
                     <div className="flex space-x-4">
                         <div className="mt-6 w-full">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="name"
-                                value="Name"
-                            />
-
-                            <TextInput
-                                name="name"
-                                value={data.name}
-                                onChange={(e) => setData("name", e.target.value)}
-                                className="w-full"
-                                placeholder="name"
-                            />
-
-                            <InputError message={errors.name} className="mt-2" />
-                        </div>
-                        <div className="mt-6 w-full ">
-                            <label
-                                htmlFor="status"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Category
-                            </label>
+                            <InputLabel className="mb-2" htmlFor="name" value="Patient Name" />
                             <select
-                                name="category"
-                                onChange={(e) => setData("category", e.target.value)}
-                                defaultValue={data.category}
+                                name="patient_id"
+                                onChange={(e) => setData('patient_id', e.target.value)}
+                                defaultValue={data.patient_id}
                                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             >
-                                <option>Select a category</option>
-                                <option value="syrub">Syrub</option>
-                                <option value="capsule">Capsule</option>
-                                <option value="injection">Injection</option>
-                                <option value="ointment">Ointment</option>
-                                <option value="cream">Cream</option>
-                                <option value="liquid">Liquid</option>
-                                <option value="tablet">Tablet</option>
-                                <option value="drops">Drops</option>
-                                <option value="surgical">Surgical</option>
-                                <option value="inhales">Inhales</option>
-                                <option value="preperations">Preperations</option>
+                                <option value="">Select a patient</option>
+                                {patients.map((patient) => (
+                                    <option value={patient.id} key={patient.id}>
+                                        {patient.name}
+                                    </option>
+                                ))}
                             </select>
+                            <InputError message={errors.patient_id} className="mt-2" />
+                        </div>
+
+                        <div className="mt-6 w-full">
+                            <InputLabel className="mb-2" htmlFor="name" value="Medicine Category" />
+                            <select
+                                name="medicine_id"
+                                onChange={(e) => setData('medicine_id', e.target.value)}
+                                defaultValue={data.medicine_id}
+                                className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            >
+                                <option value="">Select</option>
+                                {medicines.map((medicine) => (
+                                    <option value={medicine.id} key={medicine.id}>
+                                        {medicine.category}
+                                    </option>
+                                ))}
+                            </select>
+                            <InputError message={errors.medicine_id} className="mt-2" />
                         </div>
                         <div className="mt-6 w-full">
                             <InputLabel
                                 className="mb-2"
-                                htmlFor="company"
-                                value="Company"
-                            />
-                            <input
-                                className="w-full border-gray-300 rounded-md shadow-sm"
-                                type="text"
-                                onChange={(e) => setData("company", e.target.value)}
-                            />
-
-                        </div>
-                    </div>
-                    <div className="flex space-x-4">
-                        <div className="mt-6 w-full">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="composition"
-                                value="Composition"
-                            />
-                            <input
-                                className="w-full border-gray-300 rounded-md shadow-sm"
-                                type="text"
-                                onChange={(e) => setData("composition", e.target.value)}
-                            />
-
-                        </div>
-
-                        <div className="mt-6 w-full">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="group"
-                                value="Group"
-                            />
-                            <input
-                                className="w-full border-gray-300 rounded-md shadow-sm"
-                                type="text"
-                                onChange={(e) => setData("group", e.target.value)}
-                            />
-
-                        </div>
-
-                        <div className="mt-6 w-full">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="tax"
-                                value="Tax"
+                                htmlFor="medicine_name"
+                                value="Medicine Name"
                             />
                             <TextInput
-                                className="w-full border-gray-300 rounded-md shadow-sm"
+                                name="phone"
                                 type="text"
-                                value={data.tax}
-                                onChange={(e) => setData("tax", e.target.value)}
+                                value={data.medicine_name}
+                                disabled
+                                className="w-full"
                             />
-
                         </div>
                     </div>
+
                     <div className="flex space-x-4">
 
                         <div className="mt-6 w-full">
                             <InputLabel
                                 className="mb-2"
                                 htmlFor="sale"
-                                value="Sale"
+                                value="Price"
                             />
 
                             <TextInput
                                 name="phone"
-                                type="number"
-                                value={data.sale}
-                                onChange={(e) => setData("sale", e.target.value)}
+                                type="text"
+                                value={data.price}
+                                onChange={(e) => setData("price", e.target.value)}
                                 className="w-full"
-                                placeholder="number"
                             />
 
-                            <InputError message={errors.sale} className="mt-2" />
+                            <InputError message={errors.price} className="mt-2" />
                         </div>
 
                         <div className="mt-6 w-full">
@@ -262,53 +229,22 @@ export default function PharmacyForm() {
                             <InputError message={errors.quantity} className="mt-2" />
                         </div>
 
-                        <div className="mt-6 w-full">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="expire_date"
-                                value="Expire Dte"
-                            />
-                            <input
-                                className="w-full border-gray-300 rounded-md shadow-sm"
-                                type="date"
-                                defaultValue={expire_date.toLocaleDateString("en-CA")}
-                                onChange={(e) => setData("expire_date", e.target.value)}
-                            />
-
-                            <InputError message={errors.expire_date} className="mt-2" />
-                        </div>
-
                     </div>
-                    <div className="flex space-x-4">
 
-                        <div className="mt-6 w-full ">
-                            <InputLabel
-                                className="mb-2"
-                                htmlFor="note"
-                                value="Note"
-                            />
-
-                            <TextInput
-                                name="note"
-                                type="text"
-                                value={data.note}
-                                onChange={(e) =>
-                                    setData("note", e.target.value)
-                                }
-                                className="w-full"
-                            />
-
-
-                        </div>
-                    </div>
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>
                             Cancel
                         </SecondaryButton>
-
-                        <PrimaryButton className="ml-3" disabled={processing}>
-                            Submit
-                        </PrimaryButton>
+                        {
+                            ctx.isUpdateMode === true ?
+                                <PrimaryButton className="ml-3" disabled={processing}>
+                                    Update
+                                </PrimaryButton>
+                                :
+                                <PrimaryButton className="ml-3" disabled={processing}>
+                                    Submit
+                                </PrimaryButton>
+                        }
                     </div>
                 </form>
             </Modal>

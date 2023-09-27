@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medicine;
+use App\Models\Patient;
+use App\Models\Pharmacy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class PharmacyController extends Controller
 {
@@ -11,7 +16,7 @@ class PharmacyController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('pharmacy/Pharmacy.Page', ['pharmacies' => Pharmacy::orderBy('id', 'desc')->with('patients', 'medicines')->get(), 'patients' => Patient::all(), 'medicines' => Medicine::all()]);
     }
 
     /**
@@ -27,7 +32,13 @@ class PharmacyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $pharmacy = Pharmacy::create([
+            'patient_id' => $request->patient_id,
+            'medicine_id' => $request->medicine_id,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+        ]);
+        return Redirect::back()->with(['message' => "Pharmacy created"]);
     }
 
     /**
@@ -49,16 +60,23 @@ class PharmacyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Pharmacy $pharmacy)
     {
-        //
+        $pharmacy->update([
+            'patient_id' => $request->patient_id,
+            'medicine_id' => $request->medicine_id,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+        ]);
+        return Redirect::back()->with(['message' => "Pharmacy updated"]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Pharmacy $pharmacy)
     {
-        //
+        $pharmacy->delete();
+        return Redirect::back()->with(['message' => "Pharmacy deleted"]);
     }
 }

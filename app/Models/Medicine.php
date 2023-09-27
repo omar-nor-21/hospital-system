@@ -10,4 +10,8 @@ class Medicine extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public function pharmacies()
+    {
+        return $this->hasMany(Pharmacy::class, 'medicine_id');
+    }
 }

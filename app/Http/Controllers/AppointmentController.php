@@ -44,10 +44,10 @@ class AppointmentController extends Controller
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
             'doctor_fee' => $request->fee,
-            'priority' => 'normal',
+            'priority' => $request->priority,
             'status' => $request->status
         ]);
-        return Redirect::back();
+        return Redirect::back()->with(['message' => "Appointment Created"]);
     }
 
     /**
@@ -69,9 +69,17 @@ class AppointmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Appointment $appointment)
     {
-        //
+        $appointment->update([
+            'appointment_date' => $request->appointment_date,
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $request->doctor_id,
+            'doctor_fee' => $request->fee,
+            'priority' => $request->priority,
+            'status' => $request->status
+        ]);
+        return Redirect::back()->with(['message' => "Appointment Updated"]);
     }
 
     /**
@@ -79,6 +87,7 @@ class AppointmentController extends Controller
      */
     public function destroy(Appointment $appointment)
     {
-        $appointment->destroy;
+        $appointment->delete();
+        return Redirect::back()->with(['message' => "Appointment Deleted"]);
     }
 }

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import PatientForm from "./Patient.form";
 import PatientList from "./Patient.list";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import FormProvider, { useFormContext } from "../PageFormContext";
+import FormProvider, { useFormContext } from "../../context/PageFormContext";
 
 function PatientPage() {
     const ctx = useFormContext()

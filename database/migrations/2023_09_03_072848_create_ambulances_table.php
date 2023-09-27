@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('ambulances')) return;
         Schema::create('ambulances', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('license');
-            $table->string('phone');
-            $table->string('vehicle_name');
-            $table->string('vehicle_number');
+            $table->string('driver_name');
+            $table->string('driver_license');
+            $table->string('driver_phone');
+            $table->string('vehicle_model');
+            $table->string('vehicle_year_made');
             $table->string('vehicle_type');
             $table->string('note')->nullable();
             $table->timestamps();

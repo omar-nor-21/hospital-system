@@ -14,7 +14,7 @@ class MedicineController extends Controller
      */
     public function index()
     {
-        return Inertia::render('medicine/Medicine.Page',['medicines' => Medicine::orderBy('id','desc')->get()]);
+        return Inertia::render('medicine/Medicine.Page', ['medicines' => Medicine::orderBy('id', 'desc')->get()]);
     }
 
     /**
@@ -47,7 +47,7 @@ class MedicineController extends Controller
             'quantity' => $request->quantity,
             'expire_date' => $request->expire_date,
         ]);
-        return Redirect::back()->with('success' ,'Created New Medicine');
+        return Redirect::back()->with('message', 'Created Medicine');
     }
 
     /**
@@ -69,16 +69,28 @@ class MedicineController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Medicine $medicine)
     {
-        //
+        $medicine->update([
+            'name' => $request->name,
+            'category' => $request->category,
+            'company' => $request->company,
+            'composition' => $request->composition,
+            'group' => $request->group,
+            'sale' => $request->sale,
+            'tax' => $request->tax,
+            'quantity' => $request->quantity,
+            'expire_date' => $request->expire_date,
+        ]);
+        return Redirect::back()->with('message', 'Updated Medicine');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Medicine $medicine)
     {
-        //
+        $medicine->delete();
+        return Redirect::back()->with('message', 'Deleted Medicine');
     }
 }

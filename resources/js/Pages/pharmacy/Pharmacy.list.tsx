@@ -1,15 +1,23 @@
 import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { MedicineProps } from "./Pharmacy.form";
-import { useFormContext } from "../PageFormContext";
+import { useForm, usePage } from "@inertiajs/react";
+import { PharmacyProps } from "./Pharmacy.form";
+import { useFormContext } from "../../context/PageFormContext";
 import Toast from "@/components/ui/Toast";
+import useToasterStore from "@/store/toaster";
+import Modal from "@/components/forms/Modal";
+import SecondaryButton from "@/components/ui/SecondaryButton";
+import DangerButton from "@/components/ui/DangerButton";
 
 export default function PharmacyMeList() {
 
-    const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
+    const pharmacies = usePage<PageProps<{ pharmacies: PharmacyProps[] }>>().props.pharmacies;
 
     const ctx = useFormContext()
+
+    const { delete: destroy, processing } = useForm({});
+
+    const { setMessage, setShow } = useToasterStore(state => state)
 
     const handleEdit = (id: string) => {
         ctx.setShow(true)
@@ -17,30 +25,45 @@ export default function PharmacyMeList() {
         ctx.setUpdateId(id)
     }
 
+    const handleDelete = () => {
+        destroy(route("pharmacy.destroy", ctx.deleteId), {
+            onSuccess: (value) => {
+                setMessage(value.props.message as string);
+                setShow(true)
+                ctx.setDeleteConfirmModel(false)
+            },
+            onError: (value) => {
+                console.log(value)
+            }
+        });
+    }
+
+    const showModel = (id: string) => {
+        ctx.setDeleteId(id);
+        ctx.setDeleteConfirmModel(true)
+    }
+
+    const closeModal = () => {
+        ctx.setDeleteConfirmModel(false);
+    };
     return (
-        <div className="">
-
-
+        <>
             <Table
-                data={medicines}
+                data={pharmacies}
                 thead={() => (
                     <tr>
-                        <th scope="col" className="px-4 py-3">Name</th>
-                        <th scope="col" className="px-4 py-3">Expire Date</th>
-                        <th scope="col" className="px-4 py-3">Category</th>
-                        <th scope="col" className="px-4 py-3">Tax</th>
-                        <th scope="col" className="px-4 py-3">Sale</th>
+                        <th scope="col" className="px-4 py-3">Patient Name</th>
+                        <th scope="col" className="px-4 py-3">Medicine Category</th>
+                        <th scope="col" className="px-4 py-3">Price</th>
                         <th scope="col" className="px-4 py-3">Quantity</th>
                         <th scope="col" className="px-12 py-3">Actions</th>
                     </tr>
                 )}
                 tbody={(value, index) => (
                     <tr className="border-b dark:border-gray-700" key={index}>
-                        <th className="px-4 py-3 ">{value.name}</th>
-                        <td className="px-4 py-3">{value.expire_date}</td>
-                        <td className="px-4 py-3">{value.category}</td>
-                        <td className="px-4 py-3">{value.tax}</td>
-                        <td className="px-4 py-3">{value.sale}</td>
+                        <th className="px-4 py-3 ">{value.patients?.name}</th>
+                        <td className="px-4 py-3">{value.medicines?.category}</td>
+                        <td className="px-4 py-3">${value.price}</td>
                         <td className="px-4 py-3">{value.quantity}</td>
                         <td className="px-4 py-3 flex space-x-4 ">
                             <button
@@ -67,6 +90,7 @@ export default function PharmacyMeList() {
                                 Edit
                             </button>
                             <button
+                                onClick={() => showModel(value.id as string)}
                                 type="button"
                                 data-modal-target="deleteModal"
                                 data-modal-toggle="deleteModal"
@@ -92,7 +116,23 @@ export default function PharmacyMeList() {
                     </tr>
                 )}
             />
-        </div>
+            {/* // delete model */}
+            <Modal show={ctx.deleteConfirmModel} onClose={closeModal} maxWidth="sm">
+                <form className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900 text-center">
+                        Are you sure you want to delete?
+                    </h2>
+                    <div className="mt-6 flex justify-center">
+                        <SecondaryButton onClick={closeModal}>No</SecondaryButton>
+
+                        <DangerButton className="ml-3 bg-blue-500 hover:bg-blue-500" disabled={processing} onClick={() => handleDelete()}>
+                            Yes
+                        </DangerButton>
+                    </div>
+                </form>
+            </Modal>
+        </>
+
 
     )
 

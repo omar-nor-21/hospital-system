@@ -41,28 +41,9 @@ class DoctorController extends Controller
             'fee' => 'required',
         ]);
 
-        //$photo = time() . '.' . $request->file->extension();
-        //$request->file->move(public_path('uploads'), $photo);
 
         DB::transaction(function () use ($request) {
-            $doctor = Doctor::create([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'sex' => $request->sex,
-                'blood_group' => $request->blood_group,
-                'marital_status' => $request->marital_status,
-                'dob' => $request->dob,
-                'doj' => $request->doj,
-                'phone' => $request->phone,
-                'emergency_contact' => $request->emergency_contact,
-                'email' => $request->email,
-                'qualification' => $request->qualification,
-                'work_experience' => $request->work_experience,
-                'specialization' => $request->specialization,
-                'fee' => $request->fee,
-                'photo' => "",
-            ]);
-
+            Doctor::create($this->columData($request));
             return Redirect::back()->with(['message' => "Doctor Created Successfully"]);
         });
     }
@@ -88,7 +69,27 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
-        $doctor->update([
+        DB::transaction(function () use ($request, $doctor) {
+            $doctor->update($this->columData($request));
+            return Redirect::back()->with(['message' => "Doctor Updated Successfully"]);
+        });
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Doctor $doctor)
+    {
+        $doctor->delete();
+        return Redirect::back()->with(['message' => "Doctor Deleted Successfully"]);
+    }
+
+    public function columData(Request $request)
+    {
+        //$photo = time() . '.' . $request->file->extension();
+        //$request->file->move(public_path('uploads'), $photo);
+
+        $data = ([
             'name' => $request->name,
             'phone' => $request->phone,
             'sex' => $request->sex,
@@ -105,20 +106,6 @@ class DoctorController extends Controller
             'fee' => $request->fee,
             'photo' => "",
         ]);
-        return Redirect::back()->with(['message' => "Doctor Updated Successfully"]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Doctor $doctor)
-    {
-        $doctor->delete();
-        return Redirect::back()->with(['message' => "Doctor Deleted Successfully"]);
-    }
-
-    public function createOrUpdate(Request $request)
-    {
-        //
+        return $data;
     }
 }

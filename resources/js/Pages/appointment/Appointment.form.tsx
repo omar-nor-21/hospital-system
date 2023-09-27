@@ -9,7 +9,8 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
 import { PatientProps } from "../patient/Patient.form";
 import { DoctorProps } from "../doctor/Doctor.form";
-import { useFormContext } from "../PageFormContext";
+import { useFormContext } from "../../context/PageFormContext";
+import useToasterStore from "@/store/toaster";
 
 export type AppointmentProps = {
     id?: string,
@@ -29,10 +30,15 @@ export default function AppointmentForm() {
     const patients = usePage<PageProps<{ patients: PatientProps[] }>>().props.patients;
     const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
     const appointments = usePage<PageProps<{ appointments: AppointmentProps[] }>>().props.appointments;
+
     const ctx = useFormContext()
+
+    const { setShow, setMessage } = useToasterStore(state => state)
+
     const defaultDate = new Date();
     const [appointment_date] = useState(defaultDate);
-    const { data, setData, post, processing, errors, reset } = useForm<AppointmentProps>({
+
+    const { data, setData, post, processing, errors, reset, patch } = useForm<AppointmentProps>({
         patient_id: "",
         doctor_id: "",
         appointment_date: "",
@@ -43,13 +49,40 @@ export default function AppointmentForm() {
 
     const closeModal = () => {
         ctx?.setShow(false);
-        reset()
+        ctx.setIsUpdateMode(false)
+        reset();
+
     };
 
     const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(route("appointment.store"));
-        ctx.setIsUpdateMode(true);
+        if (ctx.isUpdateMode !== true) {
+            post(route("appointment.store"), {
+                onSuccess: (value) => {
+                    setMessage(value.props.message as string)
+                    setShow(true)
+                    ctx.setShow(false)
+                    reset();
+                },
+                onError: (error) => {
+                    console.log(error)
+                }
+            });
+
+        }
+        else {
+            patch(route('appointment.update', data.id), {
+                onSuccess: (value) => {
+                    setMessage(value.props.message as string)
+                    ctx.setShow(false)
+                    setShow(true)
+                    reset();
+                },
+                onError: (error) => {
+                    console.log(error)
+                }
+            })
+        }
     };
 
     // is update mode
@@ -77,9 +110,8 @@ export default function AppointmentForm() {
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                     <h2 className="text-xl font-medium  text-gray-900">
-                        New Appointment
+                        {ctx.isUpdateMode ? "Update Appointment" : "New Appointment"}
                     </h2>
-
                     <button
                         onClick={closeModal}
                         type="button"
@@ -93,9 +125,9 @@ export default function AppointmentForm() {
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path
-                                fill-rule="evenodd"
+                                fillRule="evenodd"
                                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
+                                clipRule="evenodd"
                             />
                         </svg>
                         <span className="sr-only">Close modal</span>
@@ -230,9 +262,8 @@ export default function AppointmentForm() {
                     <SecondaryButton onClick={closeModal}>
                         Cancel
                     </SecondaryButton>
-
                     <PrimaryButton className="ml-3" disabled={processing}>
-                        Submit
+                        {ctx.isUpdateMode ? "Update" : "Submit"}
                     </PrimaryButton>
                 </div>
             </form>

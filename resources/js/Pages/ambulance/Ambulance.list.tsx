@@ -2,7 +2,7 @@ import Table from "@/components/ui/table/Table";
 import { PageProps } from "@/types";
 import { useForm, usePage } from "@inertiajs/react";
 import { useFormContext } from "../../context/PageFormContext";
-import { DoctorProps } from "./Doctor.form";
+import { AmbulanceProps } from "./Ambulance.form";
 import Modal from "@/components/forms/Modal";
 import DangerButton from "@/components/ui/DangerButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
@@ -11,12 +11,12 @@ import useToasterStore from "@/store/toaster";
 
 export default function DoctorList() {
 
-    const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
+    const ambulances = usePage<PageProps<{ ambulances: AmbulanceProps[] }>>().props.ambulances;
 
     const ctx = useFormContext();
 
     const { delete: destroy, processing } = useForm({});
-    
+
     const { setMessage, setShow } = useToasterStore(state => state)
 
     const handleEdit = (id: string) => {
@@ -25,7 +25,7 @@ export default function DoctorList() {
         ctx.setIsUpdateMode(true);
     }
     const handleDelete = () => {
-        destroy(route("doctor.destroy", ctx.deleteId), {
+        destroy(route("ambulance.destroy", ctx.deleteId), {
             onSuccess: (value) => {
                 setMessage(value.props.message as string);
                 setShow(true)
@@ -48,15 +48,15 @@ export default function DoctorList() {
 
     return (
         <>
-            <Table data={doctors}
+            <Table data={ambulances}
                 thead={() => (
                     <tr>
                         <th scope="col" className="px-4 py-3">Id</th>
-                        <th scope="col" className="px-4 py-3">Name</th>
-                        <th scope="col" className="px-4 py-3">Phone</th>
-                        <th scope="col" className="px-4 py-3">Blood group</th>
-                        <th scope="col" className="px-4 py-3">Date of joining</th>
-                        <th scope="col" className="px-4 py-3">Emergency contact</th>
+                        <th scope="col" className="px-4 py-3">Driver Name</th>
+                        <th scope="col" className="px-4 py-3">Driver Phone</th>
+                        <th scope="col" className="px-4 py-3">Car Model</th>
+                        <th scope="col" className="px-4 py-3">Car Type</th>
+                        <th scope="col" className="px-4 py-3">Note</th>
                         <th scope="col" className="px-12 py-3">Actions</th>
                     </tr>
                 )
@@ -64,11 +64,11 @@ export default function DoctorList() {
                 tbody={(value, index) => (
                     <tr className="border-b dark:border-gray-700" key={index}>
                         <td className="px-4 py-3">{value.id}</td>
-                        <td className="px-4 py-3">{value.name}</td>
-                        <td className="px-4 py-3">{value.phone}</td>
-                        <td className="px-4 py-3">{value.blood_group}</td>
-                        <td className="px-4 py-3">{value.doj}</td>
-                        <td className="px-4 py-3">{value.emergency_contact ?? "-----"}</td>
+                        <td className="px-4 py-3">{value.driver_name}</td>
+                        <td className="px-4 py-3">{value.driver_phone}</td>
+                        <td className="px-4 py-3">{value.vehicle_model}</td>
+                        <td className="px-4 py-3">{value.vehicle_type}</td>
+                        <td className="px-4 py-3">{value.note ?? "-----"}</td>
                         <td className="px-4 py-3 flex space-x-4 ">
                             <button
                                 type="button"

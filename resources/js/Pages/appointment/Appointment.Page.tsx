@@ -2,7 +2,7 @@ import Layout from "@/layout/layout";
 import AppointmentForm from "./Appointment.form";
 import AppointmentList from "./Appointment.list";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import FormProvider, { useFormContext } from "../PageFormContext";
+import FormProvider, { useFormContext } from "../../context/PageFormContext";
 
 function AppointmentPage() {
     const ctx = useFormContext()

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained(table: 'patients')->onUpdate('cascade')->onDelete('cascade');
             $table->string('doctor_fee');
             $table->string('shift')->nullable();
-            $table->string('priority')->nullable();
+            $table->string('priority')->default('normal');
             $table->string('status')->nullable();
             $table->timestamps();
         });

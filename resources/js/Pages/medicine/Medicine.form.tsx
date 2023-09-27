@@ -7,9 +7,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { PageProps } from '@/types';
-import { useFormContext } from "../PageFormContext";
-import Toast from "@/components/ui/Toast";
-import useDoctorStore from "@/store/toaster";
+import { useFormContext } from "../../context/PageFormContext";
 import useToasterStore from "@/store/toaster";
 
 export type MedicineProps = {
@@ -27,17 +25,15 @@ export type MedicineProps = {
 }
 
 export default function MedicineForm() {
-    const [showToast, setShowToast] = useState(false);
     const defaultDate = new Date();
     const [expire_date] = useState(defaultDate);
 
-    // const setMessage = useToasterStore(state => state.setMessage)
-    // const setShow = useToasterStore(state => state.setShow)
+    const { setShow, setMessage } = useToasterStore(state => state)
 
-
+    const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
 
     const ctx = useFormContext()
-    const { data, setData, post, processing, errors, reset } = useForm<MedicineProps>({
+    const { data, setData, post, processing, errors, reset, patch } = useForm<MedicineProps>({
         name: "",
         category: "",
         company: "",
@@ -51,29 +47,42 @@ export default function MedicineForm() {
     });
 
     const closeModal = () => {
-        ctx?.setShow(false);
-        reset()
+        ctx.setShow(false);
+        ctx.setIsUpdateMode(false);
+        reset();
     };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        if (ctx.isUpdateMode !== true) {
+            post(route("medicine.store"), {
+                onSuccess: (value) => {
+                    setMessage(value.props.message as string);
+                    ctx.setShow(false)
+                    setShow(true)
+                },
+                onError: (error) => {
+                    console.log(error)
+                },
 
-        post(route("medicine.store"));
-        reset()
-        ctx.setIsUpdateMode(true);
+            });
 
+        }
+        else {
+            patch(route("medicine.update", data.id), {
+                onSuccess: (value) => {
+                    setMessage(value.props.message as string);
+                    ctx.setShow(false)
+                    setShow(true)
+                    reset();
+                },
+                onError: (error) => {
+                    console.log(error)
+                },
 
-        setShowToast(true);
-
+            });
+        }
     };
-
-    const medicines = usePage<PageProps<{ medicines: MedicineProps[] }>>().props.medicines;
-
-    const setMessage = useDoctorStore = 
-    // toast timeout
-    useEffect(() => {
-        setTimeout(() => { })
-    }, [])
 
     // is update mode
     useEffect(() => {
@@ -85,13 +94,12 @@ export default function MedicineForm() {
 
     return (
         <div className="">
-
             <Modal show={ctx.show} onClose={closeModal}>
                 <form className="p-6" onSubmit={submit} >
                     {/* header modal */}
                     <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
                         {
-                            ctx.isUpdateMode == true ?
+                            ctx.isUpdateMode === true ?
                                 <h2 className="text-xl font-medium  text-gray-900">
                                     Update Medicine
                                 </h2>
@@ -163,7 +171,7 @@ export default function MedicineForm() {
                                 <option value="drops">Drops</option>
                                 <option value="surgical">Surgical</option>
                                 <option value="inhales">Inhales</option>
-                                <option value="preperations">Preperations</option>
+                                <option value="preparation">Preparations</option>
                             </select>
                         </div>
                         <div className="mt-6 w-full">
@@ -176,6 +184,7 @@ export default function MedicineForm() {
                                 className="w-full border-gray-300 rounded-md shadow-sm"
                                 type="text"
                                 onChange={(e) => setData("company", e.target.value)}
+                                value={data.company}
                             />
 
                         </div>
@@ -191,6 +200,8 @@ export default function MedicineForm() {
                                 className="w-full border-gray-300 rounded-md shadow-sm"
                                 type="text"
                                 onChange={(e) => setData("composition", e.target.value)}
+                                value={data.composition}
+
                             />
 
                         </div>
@@ -205,6 +216,8 @@ export default function MedicineForm() {
                                 className="w-full border-gray-300 rounded-md shadow-sm"
                                 type="text"
                                 onChange={(e) => setData("group", e.target.value)}
+                                value={data.group}
+
                             />
 
                         </div>
@@ -307,10 +320,16 @@ export default function MedicineForm() {
                         <SecondaryButton onClick={closeModal}>
                             Cancel
                         </SecondaryButton>
-
-                        <PrimaryButton className="ml-3" disabled={processing}>
-                            Submit
-                        </PrimaryButton>
+                        {
+                            ctx.isUpdateMode === true ?
+                                <PrimaryButton className="ml-3" disabled={processing}>
+                                    Update
+                                </PrimaryButton>
+                                :
+                                <PrimaryButton className="ml-3" disabled={processing}>
+                                    Submit
+                                </PrimaryButton>
+                        }
                     </div>
                 </form>
             </Modal>

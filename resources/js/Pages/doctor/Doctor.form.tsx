@@ -7,9 +7,10 @@ import { useForm, usePage } from "@inertiajs/react";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FormEventHandler } from 'react';
-import { useFormContext } from "../PageFormContext";
+import { useFormContext } from "../../context/PageFormContext";
 import useToasterStore from "@/store/toaster";
 import { PageProps } from "@/types";
+import moment from "moment";
 
 export type DoctorProps = {
     id?: string,
@@ -33,7 +34,6 @@ export type DoctorProps = {
 
 }
 export default function DoctorForm() {
-
     const { data, setData, post, processing, errors, reset, patch } = useForm<DoctorProps>({
         name: "",
         father_name: "",
@@ -42,8 +42,8 @@ export default function DoctorForm() {
         sex: "",
         blood_group: "",
         marital_status: "",
-        dob: "",
-        doj: "",
+        dob: moment().format('YYYY-MM-DD'),
+        doj: moment().format('YYYY-MM-DD'),
         photo: "",
         emergency_contact: "",
         email: "",
@@ -55,21 +55,19 @@ export default function DoctorForm() {
     });
 
     const doctors = usePage<PageProps<{ doctors: DoctorProps[] }>>().props.doctors;
+
     const ctx = useFormContext();
 
     const { setShow, setMessage } = useToasterStore(state => state)
 
-
-    const defaultDate = new Date();
-    const [dob] = useState(defaultDate);
-    const [doj] = useState(defaultDate);
-
     const closeModal = () => {
         ctx.setShow(false);
-        ctx.setIsUpdateMode(false);
-        reset();
-    };
+        setTimeout(() => {
+            ctx.setIsUpdateMode(false);
+            reset();
+        }, 200)
 
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -79,10 +77,9 @@ export default function DoctorForm() {
                     setMessage(value.props.message as string);
                     ctx.setShow(false)
                     setShow(true)
-                    reset();
                 },
-                onError: (value) => {
-                    console.log(value)
+                onError: (error) => {
+                    console.log(error)
                 },
 
             });
@@ -95,14 +92,13 @@ export default function DoctorForm() {
                     setShow(true)
                     reset();
                 },
-                onError: (value) => {
-                    console.log(value)
+                onError: (error) => {
+                    console.log(error)
                 },
 
             });
         }
     };
-
 
     // is update mode
     useEffect(() => {
@@ -116,15 +112,9 @@ export default function DoctorForm() {
             <form className="p-6" onSubmit={submit} >
                 {/* header modal */}
                 <div className="flex justify-between items-center rounded-t border-b dark:border-gray-600">
-                    {ctx.isUpdateMode !== true ?
-                        <h2 className="text-xl font-medium  text-gray-900">
-                            New Doctor
-                        </h2>
-                        :
-                        <h2 className="text-xl font-medium  text-gray-900">
-                            Update Doctor
-                        </h2>
-                    }
+                    <h2 className="text-xl font-medium  text-gray-900">
+                        {ctx.isUpdateMode ? "Update Doctor" : "New Doctor"}
+                    </h2>
                     <button
                         onClick={closeModal}
                         type="button"
@@ -165,7 +155,7 @@ export default function DoctorForm() {
 
                         <InputError message={errors.name} className="mt-2" />
                     </div>
-                    <div className="mt-6 w-full ">
+                    {/* <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
                             htmlFor="father_name"
@@ -186,7 +176,7 @@ export default function DoctorForm() {
                             message={errors.father_name}
                             className="mt-2"
                         />
-                    </div>
+                    </div> */}
                     <div className="mt-6 w-full ">
                         <InputLabel
                             className="mb-2"
@@ -321,7 +311,8 @@ export default function DoctorForm() {
                         <input
                             className="w-full border-gray-300 rounded-md shadow-sm"
                             type="date"
-                            defaultValue={dob.toLocaleDateString("en-CA")}
+                            defaultValue={data.dob}
+                            value={data.dob}
                             onChange={(e) => setData("dob", e.target.value)}
                         />
 
@@ -336,7 +327,8 @@ export default function DoctorForm() {
                         <input
                             className="w-full border-gray-300 rounded-md shadow-sm"
                             type="date"
-                            defaultValue={doj.toLocaleDateString("en-CA")}
+                            defaultValue={data.doj}
+                            value={data.doj}
                             onChange={(e) => setData("doj", e.target.value)}
                         />
 
@@ -491,16 +483,9 @@ export default function DoctorForm() {
                     <SecondaryButton onClick={closeModal}>
                         Cancel
                     </SecondaryButton>
-                    {
-                        ctx.isUpdateMode !== true ?
-                            <PrimaryButton className="ml-3" disabled={processing}>
-                                Submit
-                            </PrimaryButton>
-                            :
-                            <PrimaryButton className="ml-3" disabled={processing}>
-                                Update
-                            </PrimaryButton>
-                    }
+                    <PrimaryButton className="ml-3" disabled={processing}>
+                        {ctx.isUpdateMode ? "Update" : "Submit"}
+                    </PrimaryButton>
                 </div>
             </form>
         </Modal>

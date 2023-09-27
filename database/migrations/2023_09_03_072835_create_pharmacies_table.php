@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('pharmacies')) return;
         Schema::create('pharmacies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained(table: 'patients')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('medicine_id')->constrained(table: 'medicines')->onUpdate('cascade')->onDelete('cascade');
-            $table->date('date');
+            $table->string('price');
             $table->string('quantity');
             $table->timestamps();
         });

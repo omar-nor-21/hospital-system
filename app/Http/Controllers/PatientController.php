@@ -47,7 +47,7 @@ class PatientController extends Controller
             'guardian_phone' => $request->guardian_phone,
             'address' => $request->address,
         ]);
-        return Redirect::back();
+        return Redirect::back()->with('message', "Patient Created Successfully");
     }
 
     /**
@@ -69,16 +69,28 @@ class PatientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Patient $patient)
     {
-        //
+        $patient->update([
+            'name' => $request->name,
+            'guardian' => $request->guardian,
+            'gender' => $request->sex,
+            'dob' => $request->dob,
+            'blood_group' => $request->blood_group,
+            'marital_status' => $request->marital_status,
+            'patient_phone' => $request->patient_phone,
+            'guardian_phone' => $request->guardian_phone,
+            'address' => $request->address,
+        ]);
+        return Redirect::back()->with('message', "Patient Updated Successfully");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Patient $patient)
     {
-        //
+        $patient->delete();
+        return Redirect::back()->with('message', "Patient Deleted Successfully");
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AmbulanceController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\finance\incomesController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
@@ -49,8 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/medicine', MedicineController::class, ['names' => 'medicine']);
     Route::resource('/pharmacy', PharmacyController::class, ['names' => 'pharmacy']);
     Route::resource('/ambulance', AmbulanceController::class, ['names' => 'ambulance']);
-
-
+    Route::resource('/income', incomesController::class, ['names' => 'income']);
 });
 
 require __DIR__ . '/auth.php';

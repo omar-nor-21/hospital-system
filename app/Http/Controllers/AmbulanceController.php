@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AmbulanceRequest;
+use App\Models\Ambulance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class AmbulanceController extends Controller
 {
@@ -11,7 +16,7 @@ class AmbulanceController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('ambulance/Ambulance.Page', ['ambulances' => Ambulance::orderBy('id', 'desc')->get()]);
     }
 
     /**
@@ -25,9 +30,12 @@ class AmbulanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AmbulanceRequest $request)
     {
-        //
+        DB::transaction(function () use ($request) {
+            Ambulance::create($this->columnData($request));
+            return Redirect::back()->with(['message' => "Ambulance Created Successfully"]);
+        });
     }
 
     /**
@@ -49,16 +57,35 @@ class AmbulanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(AmbulanceRequest $request, Ambulance $ambulance)
     {
-        //
+        DB::transaction(function () use ($request, $ambulance) {
+            $ambulance->update($this->columnData($request));
+            return Redirect::back()->with(['message' => "Ambulance Updated Successfully"]);
+        });
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Ambulance $ambulance)
     {
-        //
+        $ambulance->delete();
+        return Redirect::back()->with(['message' => "Ambulance Deleted Successfully"]);
+    }
+    public function columnData(Request $request)
+    {
+        $data = ([
+
+            'driver_name' => $request->driver_name,
+            'driver_license' => $request->driver_license,
+            'driver_phone' => $request->driver_phone,
+            'vehicle_model' => $request->vehicle_model,
+            'vehicle_year_made' => $request->vehicle_year_made,
+            'vehicle_type' => $request->vehicle_type,
+            'note' => $request->note,
+
+        ]);
+        return $data;
     }
 }
